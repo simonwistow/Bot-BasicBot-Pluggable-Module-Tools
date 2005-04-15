@@ -6,6 +6,7 @@ lib/Bot/BasicBot/Pluggable/Module/Spell.pm
 lib/Bot/BasicBot/Pluggable/Module/Status.pm
 lib/Bot/BasicBot/Pluggable/Module/Stockquote.pm
 lib/Bot/BasicBot/Pluggable/Module/Translate.pm
+lib/Bot/BasicBot/Pluggable/Module/Tools.pod
 MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml

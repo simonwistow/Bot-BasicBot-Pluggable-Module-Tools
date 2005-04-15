@@ -4,7 +4,7 @@ use Module::Build;
 my $build = Module::Build
   ->new( module_name   => "Bot::BasicBot::Pluggable::Module::Tools",
          license       => 'perl',
-         dist_version  => '0.9',
+         dist_version  => '0.95',
          dist_author   => 'Simon Wistow <simon@thegestalt.org>',
          dist_abstract => 'a miscellany of useful plugins for Bot::BasicBot::Pluggable',
          requires      => {

@@ -43,26 +43,26 @@ sub said {
     my $factoids = 0;
     my $mods     = 0;
     foreach my $key (@keys) {
-	next unless $key =~ /^infobot_/;
-	foreach my $atom (@{$store->get('Infobot',$key)}) {
-	        $factoids++;
-		$mods++     if $atom->{create_time} >= $self->{uptime};
-	}
+	    next unless $key =~ /^infobot_/;
+    	foreach my $atom (@{$store->get('Infobot',$key)->{factoids}}) {
+            $factoids++;
+        	#$mods++     if $atom->{create_time} >= $self->{uptime};
+    	}
     }
 
     my $return = "";
 
-    if (@keys) {
-	    $return .= "Since ".localtime($started)." there ha".
-	    $return .= "".(($mods!=1)?"ve":"s");
-            $return .= " been $mods modification"; 
-	    $return .= "s" if $mods != 1;
-	    $return .= ". ";
-    }
+#    if (@keys) {
+#        $return .= "Since ".localtime($started)." there ha".
+#        $return .= "".(($mods!=1)?"ve":"s");
+#            $return .= " been $mods modification"; 
+#        $return .= "s" if $mods != 1;
+#        $return .= ". ";
+#    }
     $return .= "I have been awake $days days, $hours hours, $mins minutes, $uptime seconds this session";
     if (@keys) {
-	    $return .= ", and currently reference $factoids factoid";  
-	    $return .= "s" if $factoids != 1;
+        $return .= ", and currently reference $factoids factoid";  
+        $return .= "s" if $factoids != 1;
             $return .= ". ";
     }
     return $return;
