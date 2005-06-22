@@ -4,29 +4,121 @@ use strict;
 use Bot::BasicBot::Pluggable::Module; 
 use base qw(Bot::BasicBot::Pluggable::Module);
 
-use Math::Expression;
+our %digits = (
+               "first", "1",
+               "second", "2",
+               "third", "3",
+               "fourth", "4",
+               "fifth", "5",
+               "sixth", "6",
+               "seventh", "7",
+               "eighth", "8",
+               "ninth", "9",
+               "tenth", "10",
+               "one", "1",
+               "two", "2",
+               "three", "3",
+               "four", "4",
+               "five", "5",
+               "six", "6",
+               "seven", "7",
+               "eight", "8",
+               "nine", "9",
+               "ten", "10"
+               );
 
 
 
-sub said { 
+sub told { 
     my ($self, $mess, $pri) = @_;
 
-    my $body = $mess->{body}; 
-    my $who  = $mess->{who};
+    my $in = $mess->{body}; 
 
-    return unless ($pri == 3);
+    foreach my $x (keys %digits) {
+        $in =~ s/\b$x\b/$digits{$x}/g;
+    }
 
-    my $calc = Math::Expression->new;
+    return if $in =~ /^\s*$/;
+    return if $in =~ /(\d+\.){2,}/;
 
-    $calc->SetOpt( PrintErrFunc => sub { } );
+    my $loc = $in;
+    while ($loc =~ /(exp ([\w\d]+))/) {
+           my $exp = $1;
+           my $val = exp($2);
+           $loc =~ s/$exp/+$val/g;
+    }
 
-    my $tree;
-    eval {
-        $tree = $calc->Parse($body) || return;
-    };
-    return if $@;
-    return $calc->EvalToScalar($tree);
+    while ($loc =~ /(hex2dec\s*([0-9A-Fa-f]+))/) {
+            my $exp = $1;
+            my $val = hex($2);
+            $loc =~ s/$exp/+$val/g;
+    }
+        
+    if ($loc =~ /^\s*(dec2hex\s*(\d+))\s*\?*/) {
+            my $exp = $1;
+            my $val = sprintf("%x", "$2");
+            $loc =~ s/$exp/+$val/g;
+     }
+    my $e = exp(1);
+    $loc =~ s/\be\b/$e/;
 
+    while ($loc =~ /(log\s*((\d+\.?\d*)|\d*\.?\d+))\s*/) {
+            my $exp = $1;
+            my $res = $2;
+            my $val;
+            if ($res == 0) { 
+                $val = "Infinity";
+            } else { 
+                $val = log($res); 
+            }
+            $loc =~ s/$exp/+$val/g;
+     }
+
+     while ($loc =~ /(bin2dec ([01]+))/) {
+             my $exp = $1;
+             my $val = join ('', unpack ("B*", $2)) ;
+             $loc =~ s/$exp/+$val/g;
+     }
+
+     while ($loc =~ /(dec2bin (\d+))/) {
+             my $exp = $1;
+             my $val = join('', unpack('B*', pack('N', $2)));
+             $val =~ s/^0+//;
+             $loc =~ s/$exp/+$val/g;
+     }
+
+     $loc =~ s/ to the / ** /g;
+     $loc =~ s/\btimes\b/\*/g;
+     $loc =~ s/\bdiv(ided by)? /\/ /g;
+     $loc =~ s/\bover /\/ /g;
+     $loc =~ s/\bsquared/\*\*2 /g;
+     $loc =~ s/\bcubed/\*\*3 /g;
+     $loc =~ s/\bto\s+(\d+)(r?st|nd|rd|th)?( power)?/\*\*$1 /ig;
+     $loc =~ s/\bpercent of/*0.01*/ig;
+     $loc =~ s/\bpercent/*0.01/ig;
+     $loc =~ s/\% of\b/*0.01*/g;
+     $loc =~ s/\%/*0.01/g;
+     $loc =~ s/\bsquare root of (\d+)/$1 ** 0.5 /ig;
+     $loc =~ s/\bcubed? root of (\d+)/$1 **(1.0\/3.0) /ig;
+     $loc =~ s/ of / * /;
+     $loc =~ s/(bit(-| )?)?xor(\'?e?d( with))?/\^/g;
+     $loc =~ s/(bit(-| )?)?or(\'?e?d( with))?/\|/g;
+     $loc =~ s/bit(-| )?and(\'?e?d( with))?/\& /g;
+     $loc =~ s/(plus|and)/+/ig;
+
+     return if $loc !~ /^\s*[-\d*+\s()\/^\.\|\&\*\!]+\s*$/;
+     return if $loc =~ /^\s*\(?\d+\.?\d*\)?\s*$/;
+     return if $loc =~  /^\s*$/;
+     return if $loc =~ /^\s*[( )]+\s*$/;
+    
+     $loc = eval($loc);
+     # I just realised that I could have done this with Maths::Expression and these checks
+     return unless  $loc =~ /^[-+\de\.]+$/;
+
+     $loc =~ s/\.0+$//;
+     $loc =~ s/(\.\d+)000\d+/$1/;
+     $loc = "a number with quite a few digits..." if (length($loc) > 30);
+     return $loc;
 }
 
 sub help {
@@ -47,6 +139,7 @@ Does everything that C<Math::Expression> does;
 
 Simon Wistow, <simon@thegestalt.org>
 
+based on code by Kevin Lenzo
 
 =head1 COPYRIGHT
 
