@@ -12,15 +12,15 @@ sub said {
     my $who  = $mess->{who};
 
     return unless ($pri == 2);
-    return unless $body =~ /spell (\w+)/i;
+    return unless $body =~ s/^spell(ing)?\s+(?:of |for )?\s+//i;
 
     # h-h-h-hack
     use Lingua::Ispell qw( :all );
     Lingua::Ispell::allow_compounds(1);
 
-    my ($r) = spellcheck($1);
+    my ($r) = spellcheck($body);
 
-    return "$1 is spelt correctly" unless $r;
+    return "$body is probably spelt correctly" unless $r;
 
 
     return "$1 is spelt correctly"                        if ($r->{type} eq 'ok');
