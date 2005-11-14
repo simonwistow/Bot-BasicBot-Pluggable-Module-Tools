@@ -11,7 +11,9 @@ use Finance::Currency::Convert::XE;
 sub init {
     my $self = shift;
     $self->{converter} = Finance::Currency::Convert::XE->new();
-    $self->set("scientific_limit", 999_999_999) unless $self->get("scientific_limit"); 
+    $self->set("user_scientific_limit", 999999999) unless $self->get("user_scientific_limit"); 
+    $self->unset("user_scientific_limit");
+
 }
 
 sub said { 
@@ -31,7 +33,13 @@ sub said {
         my $val;
         eval { $val  = Math::Units::convert($amount, $from, $to) };
 
-        $val = sprintf "%e", $val if $val > $self->get("scientific_limit");
+  	my $limit = $self->get("user_scientific_limit");
+
+        if (defined $limit && $limit < $val) {
+                $val = sprintf "%e", $val;
+        }
+
+
         return "Hrrm - $@" if $@;
         return "Dunno about that" unless defined $val && $val !~ m!^\s*$!;
 
