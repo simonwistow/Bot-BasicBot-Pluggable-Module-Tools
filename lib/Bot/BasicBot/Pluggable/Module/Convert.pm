@@ -50,8 +50,8 @@ sub said {
         return "Currency conversion not working" unless $obj;
         
         my $val = $obj->convert( 
-                  'source' => $from,
-                  'target' => $to,
+                  'source' => uc($from),
+                  'target' => uc($to),
                   'value'  => $amount,
                   'format' => 'number'
                 );
