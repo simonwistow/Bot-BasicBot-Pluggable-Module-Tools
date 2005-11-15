@@ -49,9 +49,11 @@ sub said {
         my $obj = $self->{converter};
         return "Currency conversion not working" unless $obj;
         
+        $from = uc($from);
+        $to   = uc($to);
         my $val = $obj->convert( 
-                  'source' => uc($from),
-                  'target' => uc($to),
+                  'source' => $from,
+                  'target' => $to,
                   'value'  => $amount,
                   'format' => 'number'
                 );
