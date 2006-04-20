@@ -28,42 +28,37 @@ sub said {
     my ($amount, $from, $to) = ($1,$2,$3);
 
 
-    if ($body =~ /convert/) {
+    # first try and convert units
 
-        my $val;
-        eval { $val  = Math::Units::convert($amount, $from, $to) };
+     my $val = eval {  Math::Units::convert($amount, $from, $to) };
+     goto CURRENCY if $@;
 
-  	my $limit = $self->get("user_scientific_limit");
+     my $limit = $self->get("user_scientific_limit");
 
-        if (defined $limit && $limit < $val) {
-                $val = sprintf "%e", $val;
-        }
+     if (defined $limit && $limit < $val) {
+     	$val = sprintf "%e", $val;
+     }
 
 
-        return "Hrrm - $@" if $@;
-        return "Dunno about that" unless defined $val && $val !~ m!^\s*$!;
+     return "Dunno about that" unless defined $val && $val !~ m!^\s*$!;
 
-        return "$amount $from is $val $to";
+     return "$amount $from is $val $to";
+     CURRENCY:
 
-    } else {
-        my $obj = $self->{converter};
-        return "Currency conversion not working" unless $obj;
+     my $obj = $self->{converter};
+     return "Currency conversion not working" unless $obj;
         
-        $from = uc($from);
-        $to   = uc($to);
-        my $val = $obj->convert( 
+     $from = uc($from);
+     $to   = uc($to);
+     my $val = $obj->convert( 
                   'source' => $from,
                   'target' => $to,
                   'value'  => $amount,
                   'format' => 'number'
                 );
 
-        return "Currency conversion failed - ".$obj->error unless defined $val;
-
-        return "$amount $from is $val $to";
-
-    }
-
+     return "Couldn't out what to do with with the units $from and $to" unless defined $val;
+     return "$amount $from is $val $to";
 }
 
 sub help {
