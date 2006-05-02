@@ -12,6 +12,12 @@ sub help {
     return "I hate long URLs.";
 }
 
+sub init {
+    my $self = shift;
+    $self->set("user_max_length", 100) unless defined($self->get("user_max_length"));
+}
+
+
 sub said {
     my ($self, $mess, $pri) = @_;
     return unless ($pri == 0);
@@ -20,7 +26,7 @@ sub said {
  
     return if $mess->{body} =~ /phobos.apple.com/;   
     return unless $mess->{body} =~ m!(http://\S+)!;
-    return unless length($1) > 100;
+    return unless length($1) > $self->get("user_max_length");
     my $long = $1;
     my $short = $long;
     
