@@ -24,7 +24,7 @@ sub said {
 
     return unless ($pri == 2);
 
-    return unless $body =~  /^\s*(?:ex)?(?:change|convert)\s+([\d\.\,]+)\s+(\S+)\s+(?:into|to|for)\s+(\S+)/i;
+    return unless $body =~  /^\s*(?:ex)?(?:change|convert)\s+([\d\.\,]+)\s*(\S+)\s+(?:into|to|for)\s+(\S+)/i;
     my ($amount, $from, $to) = ($1,$2,$3);
 
 
