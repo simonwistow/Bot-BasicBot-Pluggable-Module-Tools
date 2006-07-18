@@ -23,18 +23,18 @@ sub said {
     my ($self, $mess, $pri) = @_;
     return unless ($pri == 0);
 
-	my $service = $self->get("user_shorten_service");
-	if (!defined $self->{_old_service} || $self->{old_service} ne $service) {
-		no warnings 'redefine';
-		eval { WWW::Shorten->import($service); };
-		if ($@) {
-			$self->{Bot}->reply($mess, "Trying to use $service didn't work: $@");
-			$self->{_old_service} = undef;
-			return;		
-	    }
-        $self->{_old_service} = $service;
-		
-	}
+    my $service = $self->get("user_shorten_service");
+    if (!defined $self->{_old_service} || $self->{old_service} ne $service) 
+    {
+        no warnings 'redefine';
+        eval { WWW::Shorten->import($service); };
+        if ($@) {
+            $self->{Bot}->reply($mess, "Trying to use $service didn't work: $@");
+            $self->{_old_service} = undef;
+            return;        
+        }
+        $self->{_old_service} = $service;        
+    }
 
 
     my $body = $mess->{body};
