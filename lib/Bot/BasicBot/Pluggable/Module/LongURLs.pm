@@ -5,7 +5,7 @@ use base qw(Bot::BasicBot::Pluggable::Module);
 use warnings;
 use strict;
 
-use WWW::MakeAShorterLink;
+require WWW::Shorten;
 
 sub help {
     my ($self, $mess) = @_;
@@ -15,12 +15,27 @@ sub help {
 sub init {
     my $self = shift;
     $self->set("user_max_length", 100) unless defined($self->get("user_max_length"));
+    $self->set("user_shorten_service", 'MakeAShorterLink') unless defined($self->get("user_shorten_service"));
 }
 
 
 sub said {
     my ($self, $mess, $pri) = @_;
     return unless ($pri == 0);
+
+	my $service = $self->get("user_shorten_service");
+	if (!defined $self->{_old_service} || $self->{old_service} ne $service) {
+		no warnings 'redefine';
+		eval { WWW::Shorten->import($service); };
+		if ($@) {
+			$self->{Bot}->reply($mess, "Trying to use $service didn't work: $@");
+			$self->{_old_service} = undef;
+			return;		
+	    }
+        $self->{_old_service} = $service;
+		
+	}
+
 
     my $body = $mess->{body};
  
