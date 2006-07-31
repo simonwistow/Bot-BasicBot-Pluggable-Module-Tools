@@ -24,7 +24,7 @@ sub said {
     return unless ($pri == 0);
 
     my $service = $self->get("user_shorten_service");
-    if (!defined $self->{_old_service} || $self->{old_service} ne $service) 
+    if (!defined $self->{_old_service} || $self->{_old_service} ne $service) 
     {
         no warnings 'redefine';
         eval { WWW::Shorten->import($service); };
