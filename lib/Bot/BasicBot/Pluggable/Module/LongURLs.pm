@@ -39,8 +39,9 @@ sub said {
 
     my $body = $mess->{body};
  
-    return if $mess->{body} =~ /phobos.apple.com/;   
-    return unless $mess->{body} =~ m!(http://\S+)!;
+	return unless defined $body;
+    return if $body =~ /phobos.apple.com/;   
+    return unless $body =~ m!(http://\S+)!;
     return unless length($1) > $self->get("user_max_length");
     my $long = $1;
     my $short = $long;
