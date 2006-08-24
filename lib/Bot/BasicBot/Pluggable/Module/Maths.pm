@@ -33,6 +33,7 @@ sub told {
     my ($self, $mess, $pri) = @_;
 
     my $in = $mess->{body}; 
+    $in =~ s/\?$//; # trailing ?
 
     foreach my $x (keys %digits) {
         $in =~ s/\b$x\b/$digits{$x}/g;
