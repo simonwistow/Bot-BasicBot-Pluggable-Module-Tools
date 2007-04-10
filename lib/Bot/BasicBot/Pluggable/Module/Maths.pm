@@ -32,7 +32,8 @@ our %digits = (
 sub told { 
     my ($self, $mess, $pri) = @_;
 
-    my $in = $mess->{body}; 
+    my $in   = $mess->{body}; 
+    my $orig = $in;
     $in =~ s/\?$//; # trailing ?
 
     foreach my $x (keys %digits) {
@@ -119,6 +120,8 @@ sub told {
      $loc =~ s/\.0+$//;
      $loc =~ s/(\.\d+)000\d+/$1/;
      $loc = "a number with quite a few digits..." if (length($loc) > 30);
+     $orig =~ s!(^\s*|\s*$)!!g;
+     return if ($orig eq $loc) || ($orig == $loc); 
      return $loc;
 }
 
