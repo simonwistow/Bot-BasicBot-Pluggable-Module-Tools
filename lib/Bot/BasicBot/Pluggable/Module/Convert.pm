@@ -50,7 +50,7 @@ sub said {
         
      $from = uc($from);
      $to   = uc($to);
-     my $val = $obj->convert( 
+     $val = $obj->convert( 
                   'source' => $from,
                   'target' => $to,
                   'value'  => $amount,
