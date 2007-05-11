@@ -15,7 +15,7 @@ sub help {
 sub init {
     my $self = shift;
     $self->set("user_max_length", 100) unless defined($self->get("user_max_length"));
-    $self->set("user_shorten_service", 'MakeAShorterLink') unless defined($self->get("user_shorten_service"));
+    $self->set("user_shorten_service", 'Metamark') unless defined($self->get("user_shorten_service"));
 }
 
 
